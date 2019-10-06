@@ -12,8 +12,9 @@ class WidgetController @Autowired constructor(
 ) {
 
 	@PostMapping(path = ["/widgets"])
-	fun create(@RequestBody widget: CreatingWidgetView): ResponseEntity<Widget> {
-		return ResponseEntity(storage.save(widget), HttpStatus.OK)
+	fun create(@RequestBody widget: WidgetView): ResponseEntity<Widget> {
+		//ToDo: лучше сделать приём 1ой строкой и инстанцирования в зависимости от хранилища
+		return ResponseEntity(storage.create(widget), HttpStatus.OK)
 	}
 
 	@GetMapping(path = ["/widgets"])
@@ -22,11 +23,27 @@ class WidgetController @Autowired constructor(
 	}
 
 	@GetMapping(path = ["/widgets/{id}"])
-	fun one(@PathVariable id: Long): ResponseEntity<Widget> {
-		//ToDo: логика на эксепшенах это потеря производительности, но тут надо много чего сделать для правильного пайплайна
-		val widget = storage.getBy(id) ?: throw WidgetNotFoundException(id)
-		return ResponseEntity(widget, HttpStatus.OK)
+	fun one(@PathVariable id: Long): ResponseEntity<Any> {
+		val widget = storage.getBy(id)
+		return if (widget == null) {
+			notFoundWidgetResponse(id)
+		} else {
+			ResponseEntity(widget, HttpStatus.OK)
+		}
+	}
+
+	private fun notFoundWidgetResponse(id: Long): ResponseEntity<Any> =
+			ResponseEntity(ApiError(HttpStatus.NOT_FOUND, "Widget with id=$id not found"), HttpStatus.NOT_FOUND)
+
+	@DeleteMapping(path = ["/widgets/{id}"])
+	fun remove(@PathVariable id: Long): ResponseEntity<Any> {
+		return if (storage.remove(id)) {
+			ResponseEntity(HttpStatus.OK)
+		} else {
+			notFoundWidgetResponse(id)
+		}
 	}
 }
 
-class WidgetNotFoundException(id: Long) : RuntimeException("Widget with id $id not found")
+//ToDo: remove this and handler
+class WidgetNotFoundException(id: Long) : RuntimeException("Widget with id=$id not found")
