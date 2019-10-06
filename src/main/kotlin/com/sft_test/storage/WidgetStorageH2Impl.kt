@@ -1,6 +1,8 @@
 package com.sft_test.storage
 
 import com.sft_test.CreatingWidgetView
+import com.sft_test.WidgetDAO
+import com.sft_test.WidgetEntity
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -10,16 +12,16 @@ class WidgetStorageH2Impl @Autowired constructor(
 ) : WidgetStorage {
 
 	override fun save(widget: CreatingWidgetView): WidgetEntity {
-		val widget = WidgetEntity(
+		val widgetEntity = WidgetEntity(
 			x = widget.x,
 			y = widget.y,
 			z = widget.z,
 			width = widget.width,
 			height = widget.height
 		)
-		dao.save(widget)
+		dao.save(widgetEntity)
 		// надо править Z индексы у других
-		return widget
+		return widgetEntity
 	}
 
 	override fun getAll(): Collection<WidgetEntity> {

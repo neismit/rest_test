@@ -1,6 +1,5 @@
 package com.sft_test
 
-import com.sft_test.storage.Widget
 import com.sft_test.storage.WidgetStorage
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus

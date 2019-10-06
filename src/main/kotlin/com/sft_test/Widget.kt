@@ -1,4 +1,4 @@
-package com.sft_test.storage
+package com.sft_test
 
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
@@ -6,7 +6,6 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import javax.annotation.Generated
 import javax.persistence.*
 
 interface Widget {

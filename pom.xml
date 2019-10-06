@@ -6,7 +6,7 @@
 
 	<groupId>test</groupId>
 	<artifactId>sft_test</artifactId>
-	<version>0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -16,7 +16,6 @@
 		<start-class>com.sft_test.main</start-class>
 		<httpclient.version>4.5.8</httpclient.version>
 	</properties>
-
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -78,6 +77,7 @@
 	</dependencies>
 
 	<build>
+		<sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
 		<testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 		<plugins>
 			<plugin>
