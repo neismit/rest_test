@@ -33,17 +33,24 @@ class WidgetController @Autowired constructor(
 	}
 
 	private fun notFoundWidgetResponse(id: Long): ResponseEntity<Any> =
-			ResponseEntity(ApiError(HttpStatus.NOT_FOUND, "Widget with id=$id not found"), HttpStatus.NOT_FOUND)
+			ResponseEntity(ApiResponse(HttpStatus.NOT_FOUND, "Widget with id=$id not found"), HttpStatus.NOT_FOUND)
 
 	@DeleteMapping(path = ["/widgets/{id}"])
 	fun remove(@PathVariable id: Long): ResponseEntity<Any> {
 		return if (storage.remove(id)) {
-			ResponseEntity(HttpStatus.OK)
+			ResponseEntity(ApiResponse(HttpStatus.OK, "widget id=$id removed"), HttpStatus.OK)
 		} else {
 			notFoundWidgetResponse(id)
 		}
 	}
-}
 
-//ToDo: remove this and handler
-class WidgetNotFoundException(id: Long) : RuntimeException("Widget with id=$id not found")
+    @PatchMapping(path = ["/widgets/{id}"])
+    fun update(@PathVariable id: Long, @RequestBody widget: WidgetView): ResponseEntity<Any> {
+        val updatedWidget = storage.update(id, widget)
+        return if (updatedWidget == null) {
+            notFoundWidgetResponse(id)
+        } else {
+            ResponseEntity(updatedWidget, HttpStatus.OK)
+        }
+    }
+}

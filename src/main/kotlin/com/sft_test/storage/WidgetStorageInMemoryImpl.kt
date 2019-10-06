@@ -14,22 +14,27 @@ class WidgetStorageInMemoryImpl : WidgetStorage {
 
     private val store = ConcurrentHashMap<Long, WidgetEntity>()
 
+    // ? можно заменить на лок по коллекции
     private val zIndexChangeLock = ReentrantLock()
 
     override fun create(widget: WidgetView): Widget {
         zIndexChangeLock.withLock {
             val zIndex = calculateZIndex(widget.z)
-            val widgetEntity = WidgetEntity(
-                    id = indexGenerator.getAndIncrement(),
-                    x = widget.x,
-                    y = widget.y,
-                    z = zIndex,
-                    width = widget.width,
-                    height = widget.height
-            )
+            val widgetEntity = createWidgetWithNewZ(widget, zIndex)
             store[widgetEntity.id] = widgetEntity
             return widgetEntity
         }
+    }
+
+    private fun createWidgetWithNewZ(widget: WidgetView, zIndex: Long): WidgetEntity {
+        return WidgetEntity(
+                id = indexGenerator.getAndIncrement(),
+                x = widget.x ?: 0,
+                y = widget.y ?: 0,
+                z = zIndex,
+                width = widget.width ?: 0.0,
+                height = widget.height ?: 0.0
+        )
     }
 
     private fun calculateZIndex(newZ: Long?): Long {
@@ -59,5 +64,28 @@ class WidgetStorageInMemoryImpl : WidgetStorage {
 
     override fun remove(id: Long): Boolean {
         return store.remove(id) != null
+    }
+
+    override fun update(id: Long, widget: WidgetView): Widget? {
+        val widgetEntity = store[id] ?: return null
+        val updatedWidget = merge(widgetEntity, widget)
+        zIndexChangeLock.withLock {
+            if (widgetEntity.z != updatedWidget.z) {
+                updatedWidget.z = calculateZIndex(updatedWidget.z)
+            }
+            store[updatedWidget.id] = updatedWidget
+            return updatedWidget
+        }
+    }
+
+    private fun merge(old: WidgetEntity, new: WidgetView): WidgetEntity {
+        return WidgetEntity(
+                id = old.id,
+                x = new.x ?: old.x,
+                y = new.y ?: old.y,
+                z = new.z ?: old.z,
+                width = new.width ?: old.width,
+                height = new.height ?: old.height
+        )
     }
 }

@@ -4,8 +4,10 @@ import com.sft_test.WidgetView
 import com.sft_test.Widget
 
 interface WidgetStorage {
-	//ToDo: тут предполагается create&save нужно разделить
+    // create & save
 	fun create(widget: WidgetView): Widget
+
+    fun update(id: Long, widget: WidgetView): Widget?
 
 	fun getAll(): Collection<Widget>
 
